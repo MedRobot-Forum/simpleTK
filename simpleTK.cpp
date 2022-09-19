@@ -5,6 +5,7 @@ simpleTK::simpleTK(QWidget *parent)
 {
     ui.setupUi(this);
 	init();
+	
 }
 
 simpleTK::~simpleTK()
@@ -37,19 +38,22 @@ void simpleTK::init()
 		mpSlicePlaneActors[i] = vtkSmartPointer<vtkActor>::New();
 	}
 	mpColors = vtkSmartPointer<vtkNamedColors>::New();
+
 }
 void simpleTK::openFile()
 {
 
-	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("Open directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	if (filePath.isEmpty())
-		return;
+	//QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("Open directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	//if (filePath.isEmpty())
+		//return;
 
+	QString filePath = "D:/workspace/simpleTK/res/SLC";
 	mReader->SetDirectoryName(filePath.toStdString().c_str());
 	mReader->Update();
 	double* center = mReader->GetOutput()->GetCenter();
 	//
 	constructMPR(center);
+
 }
 
 void simpleTK::constructMPR(double *center)
@@ -210,9 +214,18 @@ void simpleTK::constructMPR(double *center)
 		property->SetLighting(0);
 		mpSlicePlaneActors[i] = actor;
 	}
+
 	mpSlicePlaneActors[0]->GetProperty()->SetColor(mpColors->GetColor3d("Green").GetData());
 	mpSlicePlaneActors[1]->GetProperty()->SetColor(mpColors->GetColor3d("Blue").GetData());
 	mpSlicePlaneActors[2]->GetProperty()->SetColor(mpColors->GetColor3d("Red").GetData());
+
+
+	mImageViewerRenderer[0]->GetActiveCamera()->Zoom(3.5);
+	mImageViewerRenderWindow[0]->Render();
+	mImageViewerRenderer[1]->GetActiveCamera()->Zoom(3.5);
+	mImageViewerRenderWindow[1]->Render();
+	mImageViewerRenderer[2]->GetActiveCamera()->Zoom(3.5);
+	mImageViewerRenderWindow[2]->Render();
 }
 
 
