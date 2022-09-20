@@ -27,7 +27,12 @@ include_directories(${PROJECT_SOURCE_DIR}
                     #${OpenCV_LIBRARY_DIRS}
 					) 
 					
-					
+find_package(DICOM QUIET)
+if(DICOM_FOUND)
+include_directories( ${DICOM_USE_FILE} )
+endif()
+set(VTK_DICOM_LIBRARIES vtkDICOM)	
+	
 ###########
 # Targets #
 ###########
@@ -62,7 +67,7 @@ ADD_EXECUTABLE(${PROJECT_NAME}
 TARGET_LINK_LIBRARIES ( 
     ${PROJECT_NAME}
     ${VTK_LIBRARIES}
-    #${ITK_LIBRARIES}
+    ${VTK_DICOM_LIBRARIES}
     #${OpenCV_LIBS}
 	Qt5::Widgets  
 	Qt5::Core

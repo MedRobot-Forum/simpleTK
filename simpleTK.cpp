@@ -36,6 +36,8 @@ void simpleTK::init()
 	{
 		mpSlicePlanes[i] = vtkSmartPointer<vtkPlaneSource>::New();
 		mpSlicePlaneActors[i] = vtkSmartPointer<vtkActor>::New();
+		mViewImage2D[i] = vtkSmartPointer<vtkTextActor>::New();
+
 	}
 	mpColors = vtkSmartPointer<vtkNamedColors>::New();
 
@@ -51,6 +53,13 @@ void simpleTK::openFile()
 	mReader->SetDirectoryName(filePath.toStdString().c_str());
 	mReader->Update();
 	double* center = mReader->GetOutput()->GetCenter();
+
+	mReader->GetPatientName();
+	mViewImage2D[0]->SetInput("Axial");
+	mViewImage2D[0]->GetTextProperty()->SetFontSize(20);
+	mViewImage2D[0]->GetTextProperty()->SetColor(1, 0, 0);
+	mViewImage2D[0]->SetDisplayPosition(20, 330);
+	mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
 	//
 	constructMPR(center);
 

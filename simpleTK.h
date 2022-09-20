@@ -4,7 +4,14 @@
 #include "ui_simpleTK.h"
 #include <QFileDialog>
 #include <VtkInclude.h>
+#include "vtkDICOMDirectory.h"
+#include "vtkDICOMItem.h"
+#include "vtkDICOMMetaData.h"
+#include "vtkDICOMDictionary.h"
 
+#include "vtkSmartPointer.h"
+#include "vtkStringArray.h"
+#include "vtkIntArray.h"
 
 class simpleTK : public QMainWindow
 {
@@ -31,7 +38,7 @@ private:
 	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[4];
 	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[4];
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[4];
-
+	vtkSmartPointer<vtkTextActor> mViewImage2D[3];
 	vtkSmartPointer<vtkNamedColors> mpColors;
 	vtkSmartPointer<vtkPlaneSource> mpSlicePlanes[3];
 	vtkSmartPointer<vtkActor> mpSlicePlaneActors[3];
