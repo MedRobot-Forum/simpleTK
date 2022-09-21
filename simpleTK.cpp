@@ -54,13 +54,43 @@ void simpleTK::openFile()
 	mReader->Update();
 	double* center = mReader->GetOutput()->GetCenter();
 
-	mReader->GetPatientName();
+	vtkNew<vtkDICOMDirectory> dicomdir;
+	dicomdir->SetDirectoryName(filePath.toStdString().c_str());
+	dicomdir->RequirePixelDataOn();
+	dicomdir->Update();
+	int n = dicomdir->GetNumberOfSeries();
+
+	vtkNew<vtkDICOMReader> reader;
+	if (n > 0)
+	{
+		// read the first series found
+		reader->SetFileNames(dicomdir->GetFileNamesForSeries(0));
+		reader->Update();
+	}
+	else
+	{
+		std::cerr << "No DICOM images in directory!" << std::endl;
+	}
+	
+	
+			
 	mViewImage2D[0]->SetInput("Axial");
 	mViewImage2D[0]->GetTextProperty()->SetFontSize(20);
 	mViewImage2D[0]->GetTextProperty()->SetColor(1, 0, 0);
-	mViewImage2D[0]->SetDisplayPosition(20, 330);
+	mViewImage2D[0]->SetDisplayPosition(0 ,0);
 	mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
-	//
+	mViewImage2D[1]->SetInput("Sagittal");
+	mViewImage2D[1]->GetTextProperty()->SetFontSize(20);
+	mViewImage2D[1]->GetTextProperty()->SetColor(0, 0, 1);
+	mViewImage2D[1]->SetDisplayPosition(0, 0);
+	mImageViewerRenderer[1]->AddActor(mViewImage2D[1]);
+	mViewImage2D[2]->SetInput("Coronal");
+	mViewImage2D[2]->GetTextProperty()->SetFontSize(20);
+	mViewImage2D[2]->GetTextProperty()->SetColor(0, 1, 0);
+	mViewImage2D[2]->SetDisplayPosition(0, 0);
+	mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
+
+
 	constructMPR(center);
 
 }

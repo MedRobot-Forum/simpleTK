@@ -7,6 +7,7 @@
 #include "vtkDICOMDirectory.h"
 #include "vtkDICOMItem.h"
 #include "vtkDICOMMetaData.h"
+#include "vtkDICOMReader.h"
 #include "vtkDICOMDictionary.h"
 
 #include "vtkSmartPointer.h"
@@ -34,6 +35,7 @@ private:
 private:
 
 	vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
+	vtkSmartPointer<vtkDICOMReader> reader = vtkSmartPointer<vtkDICOMReader>::New();
 	vtkSmartPointer<vtkImageViewer2> mImageViewer[4];
 	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[4];
 	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[4];

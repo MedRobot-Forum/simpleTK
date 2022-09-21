@@ -38,6 +38,7 @@ set(VTK_DICOM_LIBRARIES vtkDICOM)
 ###########
 set(PROJECT_HDRS
 simpleTK.h
+VtkInclude.h
 )
 
 set(PROJECT_SRCS 
