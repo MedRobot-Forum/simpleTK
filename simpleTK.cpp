@@ -28,10 +28,10 @@ void simpleTK::init()
 		mImageViewer[i]->SetupInteractor(mImageViewerWindowInteractor[i]);
 	}
 
-	ui.imageViewerWidget0->setRenderWindow(mImageViewer[0]->GetRenderWindow());
-	ui.imageViewerWidget1->setRenderWindow(mImageViewer[1]->GetRenderWindow());
-	ui.imageViewerWidget2->setRenderWindow(mImageViewer[2]->GetRenderWindow());
-	ui.imageViewerWidget3->setRenderWindow(mImageViewer[3]->GetRenderWindow());
+	ui.imageViewerWidget0->SetRenderWindow(mImageViewer[0]->GetRenderWindow());
+	ui.imageViewerWidget1->SetRenderWindow(mImageViewer[1]->GetRenderWindow());
+	ui.imageViewerWidget2->SetRenderWindow(mImageViewer[2]->GetRenderWindow());
+	ui.imageViewerWidget3->SetRenderWindow(mImageViewer[3]->GetRenderWindow());
 
 	for (int i = 0; i < 3; i++)
 	{
