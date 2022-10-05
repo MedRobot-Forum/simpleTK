@@ -4,16 +4,16 @@
 #include "ui_simpleTK.h"
 #include <QFileDialog>
 #include <VtkInclude.h>
-#include "vtkDICOMDirectory.h"
-#include "vtkDICOMItem.h"
-#include "vtkDICOMMetaData.h"
-#include "vtkDICOMReader.h"
-#include "vtkDICOMDictionary.h"
+//#include "vtkDICOMDirectory.h"
+//#include "vtkDICOMItem.h"
+//#include "vtkDICOMMetaData.h"
+//#include "vtkDICOMReader.h"
+//#include "vtkDICOMDictionary.h"
 
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkIntArray.h"
-
+#include "TagDialog.h"
 class simpleTK : public QMainWindow
 {
     Q_OBJECT
@@ -25,17 +25,18 @@ public:
 
 public slots:
 	void openFile();
+	void openDicomTag();
 	void init();
 	void constructMPR(double *center);
 	void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
 	void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
 private:
     Ui::simpleTKClass ui;
-
+	TagDialog *tagDialog{};
 private:
 
 	vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
-	vtkSmartPointer<vtkDICOMReader> reader = vtkSmartPointer<vtkDICOMReader>::New();
+	//vtkSmartPointer<vtkDICOMReader> reader = vtkSmartPointer<vtkDICOMReader>::New();
 	vtkSmartPointer<vtkImageViewer2> mImageViewer[4];
 	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[4];
 	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[4];

@@ -14,6 +14,7 @@ simpleTK::~simpleTK()
 void simpleTK::init()
 {
 	connect(ui.actionOpen, &QAction::triggered, this, &simpleTK::openFile);
+	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
 
 	for (int i = 0; i < 4; i++)
 	{
@@ -42,6 +43,14 @@ void simpleTK::init()
 	mpColors = vtkSmartPointer<vtkNamedColors>::New();
 
 }
+
+
+void simpleTK::openDicomTag()
+{
+	QString filePath = "D:/workspace/simpleTK/res/SLC";
+	tagDialog = new TagDialog(nullptr, filePath);
+	tagDialog->show();	
+}
 void simpleTK::openFile()
 {
 
@@ -54,26 +63,29 @@ void simpleTK::openFile()
 	mReader->Update();
 	double* center = mReader->GetOutput()->GetCenter();
 
-	vtkNew<vtkDICOMDirectory> dicomdir;
-	dicomdir->SetDirectoryName(filePath.toStdString().c_str());
-	dicomdir->RequirePixelDataOn();
-	dicomdir->Update();
-	int n = dicomdir->GetNumberOfSeries();
+//	vtkNew<vtkDICOMDirectory> dicomdir;
+	//dicomdir->SetDirectoryName(filePath.toStdString().c_str());
+	//dicomdir->RequirePixelDataOn();
+	//dicomdir->Update();
+	//int n = dicomdir->GetNumberOfSeries();
 
-	vtkNew<vtkDICOMReader> reader;
-	if (n > 0)
-	{
+	//vtkNew<vtkDICOMReader> reader;
+	//if (n > 0)
+	//{
 		// read the first series found
-		reader->SetFileNames(dicomdir->GetFileNamesForSeries(0));
-		reader->Update();
-	}
-	else
-	{
-		std::cerr << "No DICOM images in directory!" << std::endl;
-	}
-	
-	
+	//	reader->SetFileNames(dicomdir->GetFileNamesForSeries(0));
+		//reader->UpdateInformation();
+		//reader->Update();
+		//vtkDICOMMetaData *meta = reader->GetMetaData();
+		//int n = meta->GetNumberOfInstances();
 			
+
+	//}
+	//else
+	//{
+	//	std::cerr << "No DICOM images in directory!" << std::endl;
+	//}
+
 	mViewImage2D[0]->SetInput("Axial");
 	mViewImage2D[0]->GetTextProperty()->SetFontSize(20);
 	mViewImage2D[0]->GetTextProperty()->SetColor(1, 0, 0);
@@ -90,9 +102,7 @@ void simpleTK::openFile()
 	mViewImage2D[2]->SetDisplayPosition(0, 0);
 	mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
 
-
 	constructMPR(center);
-
 }
 
 void simpleTK::constructMPR(double *center)

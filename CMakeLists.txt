@@ -33,17 +33,23 @@ include_directories( ${DICOM_USE_FILE} )
 endif()
 set(VTK_DICOM_LIBRARIES vtkDICOM)	
 	
+	
+	
+#INCLUDE_DIRECTORIES(${DCMTK_DIR}/include)
+#LINK_DIRECTORIES(${DCMTK_DIR}/lib)
 ###########
 # Targets #
 ###########
 set(PROJECT_HDRS
 simpleTK.h
 VtkInclude.h
+TagDialog.h
 )
 
 set(PROJECT_SRCS 
 main.cpp
 simpleTK.cpp
+TagDialog.cpp
 )
 
 file(GLOB PROJECT_UIS "*.ui")
@@ -51,6 +57,7 @@ QT5_WRAP_UI(PROJECT_UIS_H ${PROJECT_UIS})
 
 set(PROJECT_MOC_HDRS
 simpleTK.h
+TagDialog.h
 )
 QT5_WRAP_CPP(PROJECT_MOC_SRCS ${PROJECT_MOC_HDRS})
 
