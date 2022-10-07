@@ -14,6 +14,7 @@
 #include "vtkStringArray.h"
 #include "vtkIntArray.h"
 #include "TagDialog.h"
+#include "utility.h"
 class simpleTK : public QMainWindow
 {
     Q_OBJECT
@@ -24,7 +25,7 @@ public:
 
 
 public slots:
-	void openFile();
+	void openFolder();
 	void openDicomTag();
 	void init();
 	void constructMPR(double *center);

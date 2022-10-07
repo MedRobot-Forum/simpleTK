@@ -4,6 +4,7 @@ simpleTK::simpleTK(QWidget *parent)
     : QMainWindow(parent)
 {
     ui.setupUi(this);
+	this->setStyleSheet("QWidget{background: black;}");
 	init();
 	
 }
@@ -13,7 +14,7 @@ simpleTK::~simpleTK()
 
 void simpleTK::init()
 {
-	connect(ui.actionOpen, &QAction::triggered, this, &simpleTK::openFile);
+	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
 
 	for (int i = 0; i < 4; i++)
@@ -51,7 +52,7 @@ void simpleTK::openDicomTag()
 	tagDialog = new TagDialog(nullptr, filePath);
 	tagDialog->show();	
 }
-void simpleTK::openFile()
+void simpleTK::openFolder()
 {
 
 	//QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("Open directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);

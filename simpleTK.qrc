@@ -1,4 +1,11 @@
 <RCC>
-    <qresource prefix="simpleTK">
-    </qresource>
+  <qresource prefix="/res">
+    <file>res/folder.svg</file>
+    <file>res/tag2.svg</file>
+    <file>res/tag_fill.png</file>
+    <file>res/icon_big.png</file>
+    <file>res/wenjianjia.svg</file>
+    <file>res/tag.svg</file>
+    <file>res/icon_small.png</file>
+  </qresource>
 </RCC>
