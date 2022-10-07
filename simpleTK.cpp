@@ -16,7 +16,7 @@ void simpleTK::init()
 {
 	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
-
+	m_mprMaker = std::make_unique<MPRMaker>();
 	for (int i = 0; i < 4; i++)
 	{
 		mImageViewer[i] = vtkSmartPointer<vtkImageViewer2>::New();
@@ -59,51 +59,55 @@ void simpleTK::openFolder()
 	//if (filePath.isEmpty())
 		//return;
 
-	QString filePath = "D:/workspace/simpleTK/res/SLC";
-	mReader->SetDirectoryName(filePath.toStdString().c_str());
-	mReader->Update();
-	double* center = mReader->GetOutput()->GetCenter();
+	// QString filePath = "D:/workspace/simpleTK/res/SLC";
+	// mReader->SetDirectoryName(filePath.toStdString().c_str());
+	// mReader->Update();
+	// double* center = mReader->GetOutput()->GetCenter();
 
-//	vtkNew<vtkDICOMDirectory> dicomdir;
-	//dicomdir->SetDirectoryName(filePath.toStdString().c_str());
-	//dicomdir->RequirePixelDataOn();
-	//dicomdir->Update();
-	//int n = dicomdir->GetNumberOfSeries();
+	m_path = "D:/workspace/simpleTK/res/SLC";
+	vtkSmartPointer<vtkDICOMDirectory> dicomDir = vtkSmartPointer<vtkDICOMDirectory>::New();
+	dicomDir->SetDirectoryName(m_path.c_str());
+	dicomDir->RequirePixelDataOn();
+	dicomDir->Update();
 
-	//vtkNew<vtkDICOMReader> reader;
-	//if (n > 0)
-	//{
-		// read the first series found
-	//	reader->SetFileNames(dicomdir->GetFileNamesForSeries(0));
-		//reader->UpdateInformation();
-		//reader->Update();
-		//vtkDICOMMetaData *meta = reader->GetMetaData();
-		//int n = meta->GetNumberOfInstances();
-			
+	if (dicomDir->GetNumberOfSeries() > 0) {
+		mReader->SetFileNames(dicomDir->GetFileNamesForSeries(0));
+		mReader->Update();
 
-	//}
-	//else
-	//{
-	//	std::cerr << "No DICOM images in directory!" << std::endl;
-	//}
+	}
+	//double* center = mReader->GetOutput()->GetCenter();
+	// mViewImage2D[0]->SetInput("Axial");
+	// mViewImage2D[0]->GetTextProperty()->SetFontSize(20);
+	// mViewImage2D[0]->GetTextProperty()->SetColor(1, 0, 0);
+	// mViewImage2D[0]->SetDisplayPosition(0 ,0);
+	// mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
+	// mViewImage2D[1]->SetInput("Sagittal");
+	// mViewImage2D[1]->GetTextProperty()->SetFontSize(20);
+	// mViewImage2D[1]->GetTextProperty()->SetColor(0, 0, 1);
+	// mViewImage2D[1]->SetDisplayPosition(0, 0);
+	// mImageViewerRenderer[1]->AddActor(mViewImage2D[1]);
+	// mViewImage2D[2]->SetInput("Coronal");
+	// mViewImage2D[2]->GetTextProperty()->SetFontSize(20);
+	// mViewImage2D[2]->GetTextProperty()->SetColor(0, 1, 0);
+	// mViewImage2D[2]->SetDisplayPosition(0, 0);
+	// mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
 
-	mViewImage2D[0]->SetInput("Axial");
-	mViewImage2D[0]->GetTextProperty()->SetFontSize(20);
-	mViewImage2D[0]->GetTextProperty()->SetColor(1, 0, 0);
-	mViewImage2D[0]->SetDisplayPosition(0 ,0);
-	mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
-	mViewImage2D[1]->SetInput("Sagittal");
-	mViewImage2D[1]->GetTextProperty()->SetFontSize(20);
-	mViewImage2D[1]->GetTextProperty()->SetColor(0, 0, 1);
-	mViewImage2D[1]->SetDisplayPosition(0, 0);
-	mImageViewerRenderer[1]->AddActor(mViewImage2D[1]);
-	mViewImage2D[2]->SetInput("Coronal");
-	mViewImage2D[2]->GetTextProperty()->SetFontSize(20);
-	mViewImage2D[2]->GetTextProperty()->SetColor(0, 1, 0);
-	mViewImage2D[2]->SetDisplayPosition(0, 0);
-	mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
+	constructMPR();
+}
+void simpleTK::constructMPR()
+{
+	if (!m_mprMaker)
+	{
+		return;
+	}
+	m_mprMaker->SetRenderWindows(
+		mImageViewer[2]->GetRenderWindow(),
+		mImageViewer[1]->GetRenderWindow(),
+		mImageViewer[0]->GetRenderWindow());
+	//m_mprMaker->setInitialWindow(m_image->getWindowCenter());
+	//m_mprMaker->setInitialLevel(m_image->getWindowWidth());
+	m_mprMaker->createMPR(mReader);
 
-	constructMPR(center);
 }
 
 void simpleTK::constructMPR(double *center)

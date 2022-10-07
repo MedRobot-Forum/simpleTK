@@ -15,6 +15,9 @@
 #include "vtkIntArray.h"
 #include "TagDialog.h"
 #include "utility.h"
+#include "MPRMaker.h"
+#include "vtkDICOMDirectory.h"
+
 class simpleTK : public QMainWindow
 {
     Q_OBJECT
@@ -29,23 +32,26 @@ public slots:
 	void openDicomTag();
 	void init();
 	void constructMPR(double *center);
+	void constructMPR();
 	void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
 	void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
 private:
     Ui::simpleTKClass ui;
 	TagDialog *tagDialog{};
+	std::unique_ptr<MPRMaker> m_mprMaker = {};
+	std::string m_path = {};
 private:
 
-	vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
-	//vtkSmartPointer<vtkDICOMReader> reader = vtkSmartPointer<vtkDICOMReader>::New();
-	vtkSmartPointer<vtkImageViewer2> mImageViewer[4];
-	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[4];
-	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[4];
-	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[4];
+	//vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
+	vtkSmartPointer<vtkDICOMReader> mReader = vtkSmartPointer<vtkDICOMReader>::New();
+	vtkSmartPointer<vtkImageViewer2> mImageViewer[3];
+	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[3];
+	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[3];
+	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[3];
 	vtkSmartPointer<vtkTextActor> mViewImage2D[3];
 	vtkSmartPointer<vtkNamedColors> mpColors;
 	vtkSmartPointer<vtkPlaneSource> mpSlicePlanes[3];
 	vtkSmartPointer<vtkActor> mpSlicePlaneActors[3];
-
+	//vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindows[3] = {};
 	vtkSmartPointer<vtkImageReslice> reslice[3];
 };

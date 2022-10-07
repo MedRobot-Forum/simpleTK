@@ -138,14 +138,11 @@ void MPRMaker::setMiddleSlice(const int t_plane, const vtkSmartPointer<vtkDICOMR
 //-----------------------------------------------------------------------------
 void MPRMaker::renderPlaneOffScreen(const int t_plane)
 {
-	// const double level = m_initialWindow == 0
-	// 	? m_reader->GetMetaData()->Get(DC::WindowCenter).AsInt()
-	// 	: m_initialWindow;
-	// const double window = m_initialLevel == 0 ? m_reader->GetMetaData()->Get(DC::WindowWidth).AsInt() : m_initialLevel;
+	 const double level = m_initialWindow == 0
+	 	? m_reader->GetMetaData()->Get(DC::WindowCenter).AsInt()
+	 	: m_initialWindow;
+	 const double window = m_initialLevel == 0 ? m_reader->GetMetaData()->Get(DC::WindowWidth).AsInt() : m_initialLevel;
 
-	const double level = 1024;
-
-	const double window = 4095;
 	setMiddleSlice(t_plane, m_reader);
 	if (!m_colorMap)
 	{
