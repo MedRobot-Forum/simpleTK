@@ -17,22 +17,22 @@ void simpleTK::init()
 	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
 	m_mprMaker = std::make_unique<MPRMaker>();
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		mImageViewer[i] = vtkSmartPointer<vtkImageViewer2>::New();
-		mImageViewerRenderer[i] = vtkSmartPointer<vtkRenderer>::New();
-		mImageViewerWindowInteractor[i] = vtkSmartPointer<vtkRenderWindowInteractor>::New();
-		mImageViewerRenderWindow[i] = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+		//mImageViewer[i] = vtkSmartPointer<vtkImageViewer2>::New();
+		//mImageViewerRenderer[i] = vtkSmartPointer<vtkRenderer>::New();
+		//mImageViewerWindowInteractor[i] = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+		mRenderWindows[i] = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
 
-		mImageViewer[i]->SetRenderWindow(mImageViewerRenderWindow[i]);
-		mImageViewer[i]->SetRenderer(mImageViewerRenderer[i]);
-		mImageViewer[i]->SetupInteractor(mImageViewerWindowInteractor[i]);
+		//mImageViewer[i]->SetRenderWindow(mRenderWindows[i]);
+		//mImageViewer[i]->SetRenderer(mImageViewerRenderer[i]);
+		//mImageViewer[i]->SetupInteractor(mImageViewerWindowInteractor[i]);
 	}
 
-	ui.imageViewerWidget0->SetRenderWindow(mImageViewer[0]->GetRenderWindow());
-	ui.imageViewerWidget1->SetRenderWindow(mImageViewer[1]->GetRenderWindow());
-	ui.imageViewerWidget2->SetRenderWindow(mImageViewer[2]->GetRenderWindow());
-	ui.imageViewerWidget3->SetRenderWindow(mImageViewer[3]->GetRenderWindow());
+	ui.imageViewerWidget0->SetRenderWindow(mRenderWindows[0]);
+	ui.imageViewerWidget1->SetRenderWindow(mRenderWindows[1]);
+	ui.imageViewerWidget2->SetRenderWindow(mRenderWindows[2]);
+	//ui.imageViewerWidget3->SetRenderWindow(mImageViewer[3]->GetRenderWindow());
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -101,11 +101,10 @@ void simpleTK::constructMPR()
 		return;
 	}
 	m_mprMaker->SetRenderWindows(
-		mImageViewer[2]->GetRenderWindow(),
-		mImageViewer[1]->GetRenderWindow(),
-		mImageViewer[0]->GetRenderWindow());
-	//m_mprMaker->setInitialWindow(m_image->getWindowCenter());
-	//m_mprMaker->setInitialLevel(m_image->getWindowWidth());
+		ui.imageViewerWidget2->GetRenderWindow(),
+		ui.imageViewerWidget1->GetRenderWindow(),
+		ui.imageViewerWidget0->GetRenderWindow());
+
 	m_mprMaker->createMPR(mReader);
 
 }
@@ -275,11 +274,11 @@ void simpleTK::constructMPR(double *center)
 
 
 	mImageViewerRenderer[0]->GetActiveCamera()->Zoom(3.5);
-	mImageViewerRenderWindow[0]->Render();
+	mRenderWindows[0]->Render();
 	mImageViewerRenderer[1]->GetActiveCamera()->Zoom(3.5);
-	mImageViewerRenderWindow[1]->Render();
+	mRenderWindows[1]->Render();
 	mImageViewerRenderer[2]->GetActiveCamera()->Zoom(3.5);
-	mImageViewerRenderWindow[2]->Render();
+	mRenderWindows[2]->Render();
 }
 
 

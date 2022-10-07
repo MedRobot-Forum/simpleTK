@@ -47,11 +47,11 @@ private:
 	vtkSmartPointer<vtkImageViewer2> mImageViewer[3];
 	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[3];
 	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[3];
-	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[3];
+	//vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[3];
 	vtkSmartPointer<vtkTextActor> mViewImage2D[3];
 	vtkSmartPointer<vtkNamedColors> mpColors;
 	vtkSmartPointer<vtkPlaneSource> mpSlicePlanes[3];
 	vtkSmartPointer<vtkActor> mpSlicePlaneActors[3];
-	//vtkSmartPointer<vtkGenericOpenGLRenderWindow> m_renderWindows[3] = {};
+	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mRenderWindows[3] = {};
 	vtkSmartPointer<vtkImageReslice> reslice[3];
 };
