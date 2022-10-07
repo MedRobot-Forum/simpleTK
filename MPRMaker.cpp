@@ -12,6 +12,8 @@
 #include <vtkScalarsToColors.h>
 #include <vtkMatrix4x4.h>
 #include <vtkImageResliceMapper.h>
+#include <vtkTextProperty.h>
+
 
 //-----------------------------------------------------------------------------
 void MPRMaker::SetRenderWindows(const vtkSmartPointer<vtkRenderWindow>& t_sagittalWindow,
@@ -89,6 +91,7 @@ void MPRMaker::initialize()
 	{
 		m_reslicer[i] = vtkSmartPointer<vtkImageResliceToColors>::New();
 		m_originalValuesReslicer[i] = vtkSmartPointer<vtkImageReslice>::New();
+		mTextActor[i] = vtkSmartPointer<vtkTextActor>::New();
 	}
 	setInitialMatrix();
 }
@@ -162,6 +165,38 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 	m_originalValuesReslicer[t_plane]->SetOutputDimensionality(2);
 	m_originalValuesReslicer[t_plane]->SetResliceAxes(m_reslicer[t_plane]->GetResliceAxes());
 	m_originalValuesReslicer[t_plane]->Update();
+
+	 switch (t_plane)
+	 {
+	 case 0:
+		 mTextActor[t_plane]->SetInput("Sagittal");
+		 mTextActor[t_plane]->GetTextProperty()->SetColor(0, 1, 0);
+		break;
+	 case 1:
+		 mTextActor[t_plane]->SetInput("Coronal");
+		 mTextActor[t_plane]->GetTextProperty()->SetColor(0, 0, 1);
+		 break;
+	 case 2:
+		 mTextActor[t_plane]->SetInput("Axial");
+		 mTextActor[t_plane]->GetTextProperty()->SetColor(1, 0, 0);
+		 break;
+		default:
+			break;
+	 }
+
+	mTextActor[t_plane]->SetDisplayPosition(0 ,0);
+	mTextActor[t_plane]->GetTextProperty()->SetFontSize(20);
+	//mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
+	// mViewImage2D[1]->SetInput("Sagittal");
+	// mViewImage2D[1]->GetTextProperty()->SetFontSize(20);
+	// mViewImage2D[1]->GetTextProperty()->SetColor(0, 0, 1);
+	// mViewImage2D[1]->SetDisplayPosition(0, 0);
+	// mImageViewerRenderer[1]->AddActor(mViewImage2D[1]);
+	// mViewImage2D[2]->SetInput("Coronal");
+	// mViewImage2D[2]->GetTextProperty()->SetFontSize(20);
+	// mViewImage2D[2]->GetTextProperty()->SetColor(0, 1, 0);
+	// mViewImage2D[2]->SetDisplayPosition(0, 0);
+	// mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
 	vtkNew<vtkImageActor> actor;
 	vtkNew<vtkRenderer> renderer;
 	vtkNew<vtkImageResliceMapper> mapper;
@@ -170,6 +205,7 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 	actor->GetProperty()->SetInterpolationTypeToCubic();
 	actor->SetMapper(mapper);
 	renderer->AddActor(actor);
+	renderer->AddActor(mTextActor[t_plane]);
 	renderer->SetBackground(0, 0, 0);
 	renderer->GetActiveCamera()->SetParallelProjection(1);
 	renderer->ResetCamera();

@@ -15,7 +15,7 @@
 #include <vtkScalarsToColors.h>
 #include <vtkMatrix4x4.h>
 #include <vtkImageResliceMapper.h>
-
+#include <vtkTextActor.h>
 	//class Image;
 	//class Series;
 
@@ -60,6 +60,7 @@
 		vtkSmartPointer<vtkImageResliceToColors> m_reslicer[3] = {};
 		vtkSmartPointer<vtkImageReslice> m_originalValuesReslicer[3] = {};
 		vtkSmartPointer<vtkRenderWindow> m_renderWindow[3] = {};
+		vtkSmartPointer<vtkTextActor> mTextActor[3] = {};
 		vtkSmartPointer<vtkScalarsToColors> m_colorMap = {};
 
 		double m_sagittalMatrix[16] = {

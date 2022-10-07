@@ -101,8 +101,8 @@ void simpleTK::constructMPR()
 		return;
 	}
 	m_mprMaker->SetRenderWindows(
-		ui.imageViewerWidget2->GetRenderWindow(),
 		ui.imageViewerWidget1->GetRenderWindow(),
+		ui.imageViewerWidget2->GetRenderWindow(),
 		ui.imageViewerWidget0->GetRenderWindow());
 
 	m_mprMaker->createMPR(mReader);
