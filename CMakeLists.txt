@@ -15,15 +15,14 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 17)
 
 
-
-#set(BUILD_SHARED_LIBS "" ON)
-#########################
-# External Dependencies #
-#########################
 #find_package( ITK REQUIRED )  
 #include( ${ITK_USE_FILE}) 
+
+
 find_package( VTK REQUIRED )  
-include( ${VTK_USE_FILE} )
+#include( ${VTK_USE_FILE} )
+
+
 #find_package(OpenCV REQUIRED)
 #include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -36,17 +35,16 @@ include_directories(${PROJECT_SOURCE_DIR}
                     #${OpenCV_LIBRARY_DIRS}
 					) 
 					
-find_package(DICOM QUIET)
-if(DICOM_FOUND)
-include_directories( ${DICOM_USE_FILE} )
-endif()
-set(VTK_DICOM_LIBRARIES vtkDICOM)	
+#find_package(DICOM QUIET)
+#if(DICOM_FOUND)
+#include_directories( ${DICOM_USE_FILE} )
+#endif()
+#set(VTK_DICOM_LIBRARIES vtkDICOM)	
 	
 	
 find_package(DCMTK REQUIRED ${DCMTK_FIND_PACKAGE_STATEGY})
 include_directories(${DCMTK_INCLUDE_DIRS})
-#INCLUDE_DIRECTORIES(${DCMTK_DIR}/include)
-#LINK_DIRECTORIES(${DCMTK_DIR}/lib)
+
 ###########
 # Targets #
 ###########
@@ -100,7 +98,7 @@ TARGET_LINK_LIBRARIES (
     ${PROJECT_NAME}
     ${VTK_LIBRARIES}
     ${DCMTK_LIBRARIES}
-	${VTK_DICOM_LIBRARIES}
+	#${VTK_DICOM_LIBRARIES}
     #${OpenCV_LIBS}
 	Qt5::Widgets  
 	Qt5::Core

@@ -29,9 +29,9 @@ void simpleTK::init()
 		//mImageViewer[i]->SetupInteractor(mImageViewerWindowInteractor[i]);
 	}
 
-	ui.imageViewerWidget0->SetRenderWindow(mRenderWindows[0]);
-	ui.imageViewerWidget1->SetRenderWindow(mRenderWindows[1]);
-	ui.imageViewerWidget2->SetRenderWindow(mRenderWindows[2]);
+	ui.imageViewerWidget0->setRenderWindow(mRenderWindows[0]);
+	ui.imageViewerWidget1->setRenderWindow(mRenderWindows[1]);
+	ui.imageViewerWidget2->setRenderWindow(mRenderWindows[2]);
 	//ui.imageViewerWidget3->SetRenderWindow(mImageViewer[3]->GetRenderWindow());
 
 	for (int i = 0; i < 3; i++)
@@ -101,9 +101,9 @@ void simpleTK::constructMPR()
 		return;
 	}
 	m_mprMaker->SetRenderWindows(
-		ui.imageViewerWidget1->GetRenderWindow(),
-		ui.imageViewerWidget2->GetRenderWindow(),
-		ui.imageViewerWidget0->GetRenderWindow());
+		ui.imageViewerWidget1->renderWindow(),
+		ui.imageViewerWidget2->renderWindow(),
+		ui.imageViewerWidget0->renderWindow());
 
 	m_mprMaker->createMPR(mReader);
 
