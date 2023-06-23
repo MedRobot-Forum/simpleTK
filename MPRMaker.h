@@ -16,6 +16,7 @@
 #include <vtkMatrix4x4.h>
 #include <vtkImageResliceMapper.h>
 #include <vtkTextActor.h>
+
 	//class Image;
 	//class Series;
 

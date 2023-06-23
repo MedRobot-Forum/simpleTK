@@ -102,7 +102,7 @@ void MPRMaker::setInitialMatrix()
 	vtkNew<vtkMatrix4x4> axialMatrix;
 	axialMatrix->DeepCopy(m_axialMatrix);
 	m_reslicer[2]->SetResliceAxes(axialMatrix);
-	vtkNew<vtkMatrix4x4> sagittalMatrix;
+	vtkNew<vtkMatrix4x4> sagittalMatrix;																									
 	sagittalMatrix->DeepCopy(m_sagittalMatrix);
 	m_reslicer[0]->SetResliceAxes(sagittalMatrix);
 	vtkNew<vtkMatrix4x4> coronalMatrix;
@@ -171,6 +171,7 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 	 case 0:
 		 mTextActor[t_plane]->SetInput("Sagittal");
 		 mTextActor[t_plane]->GetTextProperty()->SetColor(0, 1, 0);
+
 		break;
 	 case 1:
 		 mTextActor[t_plane]->SetInput("Coronal");
@@ -184,19 +185,8 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 			break;
 	 }
 
-	mTextActor[t_plane]->SetDisplayPosition(0 ,0);
+	mTextActor[t_plane]->SetDisplayPosition(0,220);
 	mTextActor[t_plane]->GetTextProperty()->SetFontSize(20);
-	//mImageViewerRenderer[0]->AddActor(mViewImage2D[0]);
-	// mViewImage2D[1]->SetInput("Sagittal");
-	// mViewImage2D[1]->GetTextProperty()->SetFontSize(20);
-	// mViewImage2D[1]->GetTextProperty()->SetColor(0, 0, 1);
-	// mViewImage2D[1]->SetDisplayPosition(0, 0);
-	// mImageViewerRenderer[1]->AddActor(mViewImage2D[1]);
-	// mViewImage2D[2]->SetInput("Coronal");
-	// mViewImage2D[2]->GetTextProperty()->SetFontSize(20);
-	// mViewImage2D[2]->GetTextProperty()->SetColor(0, 1, 0);
-	// mViewImage2D[2]->SetDisplayPosition(0, 0);
-	// mImageViewerRenderer[2]->AddActor(mViewImage2D[2]);
 	vtkNew<vtkImageActor> actor;
 	vtkNew<vtkRenderer> renderer;
 	vtkNew<vtkImageResliceMapper> mapper;

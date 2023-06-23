@@ -9,7 +9,7 @@
 //#include "vtkDICOMMetaData.h"
 //#include "vtkDICOMReader.h"
 //#include "vtkDICOMDictionary.h"
-
+#include "TagDialog.h"
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkIntArray.h"
@@ -31,14 +31,15 @@ public slots:
 	void openFolder();
 	void openDicomTag();
 	void init();
-	void constructMPR(double *center);
+	//void constructMPR(double *center);
 	void constructMPR();
-	void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
-	void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
+	//void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
+	//void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
 private:
     Ui::simpleTKClass ui;
 	std::unique_ptr<MPRMaker> m_mprMaker = {};
 	std::string m_path = {};
+	TagDialog* tagDialog = nullptr;
 private:
 
 	//vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
