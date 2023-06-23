@@ -42,8 +42,8 @@ include_directories(${PROJECT_SOURCE_DIR}
 #set(VTK_DICOM_LIBRARIES vtkDICOM)	
 	
 	
-find_package(DCMTK REQUIRED ${DCMTK_FIND_PACKAGE_STATEGY})
-include_directories(${DCMTK_INCLUDE_DIRS})
+#find_package(DCMTK REQUIRED ${DCMTK_FIND_PACKAGE_STATEGY})
+#include_directories(${DCMTK_INCLUDE_DIRS})
 
 ###########
 # Targets #
@@ -97,7 +97,7 @@ add_executable(${PROJECT_NAME} ${SRC_FILES} ${HEAD_FILES} ${WRAP_FILES} ${RESOUR
 TARGET_LINK_LIBRARIES ( 
     ${PROJECT_NAME}
     ${VTK_LIBRARIES}
-    ${DCMTK_LIBRARIES}
+    #${DCMTK_LIBRARIES}
 	#${VTK_DICOM_LIBRARIES}
     #${OpenCV_LIBS}
 	Qt5::Widgets  

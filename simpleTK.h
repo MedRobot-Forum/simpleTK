@@ -13,7 +13,7 @@
 #include "vtkSmartPointer.h"
 #include "vtkStringArray.h"
 #include "vtkIntArray.h"
-#include "TagDialog.h"
+
 #include "utility.h"
 #include "MPRMaker.h"
 #include "vtkDICOMDirectory.h"
@@ -37,7 +37,6 @@ public slots:
 	void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
 private:
     Ui::simpleTKClass ui;
-	TagDialog *tagDialog{};
 	std::unique_ptr<MPRMaker> m_mprMaker = {};
 	std::string m_path = {};
 private:

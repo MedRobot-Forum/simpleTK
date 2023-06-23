@@ -49,8 +49,8 @@ void simpleTK::init()
 void simpleTK::openDicomTag()
 {
 	QString filePath = "D:/workspace/simpleTK/res/SLC";
-	tagDialog = new TagDialog(nullptr, filePath);
-	tagDialog->show();	
+	//tagDialog = new TagDialog(nullptr, filePath);
+	//tagDialog->show();	
 }
 void simpleTK::openFolder()
 {
