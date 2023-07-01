@@ -17,7 +17,9 @@
 #include "utility.h"
 #include "MPRMaker.h"
 #include "vtkDICOMDirectory.h"
+#include <vtkImageCast.h>
 
+#include <vtkResliceCursorCallback.h>
 class simpleTK : public QMainWindow
 {
     Q_OBJECT
@@ -33,8 +35,14 @@ public slots:
 	void init();
 	//void constructMPR(double *center);
 	void constructMPR();
+	void constructMPR2(vtkSmartPointer<vtkImageData> imageData);
 	//void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
 	//void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
+
+
+
+private:
+
 private:
     Ui::simpleTKClass ui;
 	std::unique_ptr<MPRMaker> m_mprMaker = {};
@@ -54,4 +62,10 @@ private:
 	vtkSmartPointer<vtkActor> mpSlicePlaneActors[3];
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mRenderWindows[3] = {};
 	vtkSmartPointer<vtkImageReslice> reslice[3];
+
+
+	vtkSmartPointer<vtkResliceImageViewer> riw[3];
+	vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];
+	vtkSmartPointer<vtkDistanceWidget> DistanceWidget[3];
+	vtkSmartPointer<vtkResliceImageViewerMeasurements> ResliceMeasurements;
 };
