@@ -1,7 +1,8 @@
 # simpleTK
 
-vtk-9.2
+vtk-9.0
 vtkdicom
 Qt5.13.2
-![image](https://user-images.githubusercontent.com/49086386/194545892-fba781c3-3554-40d1-9257-76456717d7c8.png)
+![image](https://github.com/0xsimple/simpleTK/assets/49086386/220a55f0-196e-4390-9a5d-077e13c23d60)
+
 
