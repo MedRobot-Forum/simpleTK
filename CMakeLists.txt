@@ -104,4 +104,4 @@ TARGET_LINK_LIBRARIES (
 	Qt5::Core
 	Qt5::Gui
   )
-#vtk_module_autoinit(TARGETS simpleTK MODULES ${VTK_LIBRARIES})
+vtk_module_autoinit(TARGETS simpleTK MODULES ${VTK_LIBRARIES})

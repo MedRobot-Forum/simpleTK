@@ -34,18 +34,18 @@ public slots:
 	void openDicomTag();
 	void init();
 	//void constructMPR(double *center);
-	void constructMPR();
+	//void constructMPR();
 	void constructMPR2(vtkSmartPointer<vtkImageData> imageData);
 	//void GetVector1(vtkPlaneSource* planeSource, double v1[3]);
 	//void GetVector2(vtkPlaneSource* planeSource, double v2[3]);
 
-
-
+	void volumeRender(vtkSmartPointer<vtkImageData> imageData);
+	void UpdateRenderModel(int value);
 private:
 
 private:
     Ui::simpleTKClass ui;
-	std::unique_ptr<MPRMaker> m_mprMaker = {};
+	//std::unique_ptr<MPRMaker> m_mprMaker = {};
 	std::string m_path = {};
 	TagDialog* tagDialog = nullptr;
 private:
@@ -53,7 +53,7 @@ private:
 	//vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();
 	vtkSmartPointer<vtkDICOMReader> mReader = vtkSmartPointer<vtkDICOMReader>::New();
 	vtkSmartPointer<vtkImageViewer2> mImageViewer[3];
-	vtkSmartPointer<vtkRenderer> mImageViewerRenderer[3];
+	vtkSmartPointer<vtkRenderer> volumeRenderer;
 	vtkSmartPointer<vtkRenderWindowInteractor> mImageViewerWindowInteractor[3];
 	//vtkSmartPointer<vtkGenericOpenGLRenderWindow> mImageViewerRenderWindow[3];
 	vtkSmartPointer<vtkTextActor> mViewImage2D[3];
@@ -63,6 +63,10 @@ private:
 	vtkSmartPointer<vtkGenericOpenGLRenderWindow> mRenderWindows[3] = {};
 	vtkSmartPointer<vtkImageReslice> reslice[3];
 
+
+	vtkSmartPointer<vtkSmartVolumeMapper> volumeMapper;
+	vtkSmartPointer<vtkVolume> volume;
+	vtkSmartPointer<vtkVolumeProperty> volumeProperty = vtkSmartPointer<vtkVolumeProperty>::New();
 
 	vtkSmartPointer<vtkResliceImageViewer> riw[3];
 	vtkSmartPointer<vtkImagePlaneWidget> planeWidget[3];

@@ -17,7 +17,7 @@ void simpleTK::init()
 {
 	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
-	m_mprMaker = std::make_unique<MPRMaker>();
+	//m_mprMaker = std::make_unique<MPRMaker>();
 
 
 	for (int i = 0; i < 3; i++)
@@ -38,12 +38,12 @@ void simpleTK::init()
 
 
 
-	vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
+	volumeRenderer = vtkSmartPointer<vtkRenderer>::New();
 	vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
 	ui.imageViewerWidget3->setRenderWindow(renderWindow);
-	ui.imageViewerWidget3->renderWindow()->AddRenderer(ren);
+	ui.imageViewerWidget3->renderWindow()->AddRenderer(volumeRenderer);
 
-
+	UpdateRenderModel(0);
 	for (int i = 0; i < 3; i++)
 	{
 		mpSlicePlanes[i] = vtkSmartPointer<vtkPlaneSource>::New();
@@ -65,14 +65,13 @@ void simpleTK::openDicomTag()
 void simpleTK::openFolder()
 {
 
-	//QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("Open directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-	//if (filePath.isEmpty())
-		//return;
-
-	// QString filePath = "D:/workspace/simpleTK/res/SLC";
-	// mReader->SetDirectoryName(filePath.toStdString().c_str());
-	// mReader->Update();
-	// double* center = mReader->GetOutput()->GetCenter();
+// 	QString filePath = QFileDialog::getExistingDirectory(this, QStringLiteral("Open directory"), "", QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+// 	if (filePath.isEmpty())
+// 		return;
+// 
+// 	mReader->SetDirectoryName(filePath.toStdString().c_str());
+// 	mReader->Update();
+// 	double* center = mReader->GetOutput()->GetCenter();
 
 	m_path = "D:/workspace/project/simpleTK/res/SLC";
 	vtkSmartPointer<vtkDICOMDirectory> dicomDir = vtkSmartPointer<vtkDICOMDirectory>::New();
@@ -89,15 +88,141 @@ void simpleTK::openFolder()
 
 
 	constructMPR2(mReader->GetOutput());
-	
+	volumeRender(mReader->GetOutput());
 
 	//constructMPR();
 }
+void simpleTK::volumeRender(vtkSmartPointer<vtkImageData> imageData) {
 
+	int dim[3];
+	imageData->GetDimensions(dim);
+	if (dim[0] < 2 || dim[1] < 2 || dim[2] < 2)
+	{
+	 	cout << "Error loading data!" << endl;
+	 	exit(EXIT_FAILURE);
+	}
+
+	volumeMapper = vtkSmartPointer<vtkSmartVolumeMapper>::New();
+	volumeMapper->SetInputData(imageData);
+	volumeMapper->SetSampleDistance(volumeMapper->GetSampleDistance() / 6);	//设置光线采样距离
+
+	volume = vtkSmartPointer<vtkVolume>::New(); 
+	
+	volume->SetMapper(volumeMapper);
+	volume->SetProperty(volumeProperty);
+
+	double* center = mReader->GetOutput()->GetCenter();
+
+	vtkSmartPointer<vtkCamera> camera = volumeRenderer->GetActiveCamera();
+	camera->SetViewUp(0, 0, -1);
+	camera->SetFocalPoint(center[0], center[1], center[2]);
+	camera->SetPosition(center[0], center[1] + 300, center[2]);
+	camera->ComputeViewPlaneNormal();
+	camera->ParallelProjectionOn();
+	camera->OrthogonalizeViewUp();
+	camera->SetParallelScale(85);
+	volumeRenderer->SetActiveCamera(camera);
+	volumeRenderer->AddVolume(volume);
+
+	volumeRenderer->GetRenderWindow()->Render();
+
+
+	/*vtkSmartPointer<vtkSTLReader> reader = vtkSmartPointer<vtkSTLReader>::New();
+	reader->SetFileName("D:\\workspace\\simpleTK\\marker3.stl");
+	reader->Update();
+
+	vtkSmartPointer<vtkPolyData> marker = reader->GetOutput();
+	mpMarkerWidget = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
+	vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+	mapper->SetInputData(marker);
+	vtkSmartPointer<vtkActor> markerActor = vtkSmartPointer<vtkActor>::New();
+	markerActor->SetMapper(mapper);
+
+	mpMarkerWidget = vtkSmartPointer<vtkOrientationMarkerWidget>::New();
+	mpMarkerWidget->SetOrientationMarker(markerActor);
+	mpMarkerWidget->SetOutlineColor(0.9300, 0.5700, 0.1300);
+	mpMarkerWidget->SetInteractor(mImageViewerRenderWindow[3]->GetInteractor());
+	mpMarkerWidget->SetViewport(0.8, 0.0, 1, 0.2);
+	mpMarkerWidget->SetEnabled(1);
+	mpMarkerWidget->InteractiveOff();*/
+
+
+}
+
+void simpleTK::UpdateRenderModel(int value)
+{
+	if (value == 0)
+	{
+		volumeProperty->SetInterpolationTypeToLinear();
+		volumeProperty->ShadeOn();  //打开或者关闭阴影测试
+		volumeProperty->SetAmbient(0.3);
+		volumeProperty->SetDiffuse(0.8);  //漫反射
+		vtkSmartPointer<vtkPiecewiseFunction> opacityFun = vtkSmartPointer<vtkPiecewiseFunction>::New();
+		opacityFun->AddPoint(-1100, 0);
+		opacityFun->AddPoint(1043, 0);
+		opacityFun->AddPoint(1459, 1);
+		opacityFun->AddPoint(3072, 1);
+		opacityFun->AddPoint(3899, 1);
+		vtkSmartPointer<vtkColorTransferFunction> colorFun = vtkSmartPointer<vtkColorTransferFunction>::New();
+		colorFun->AddRGBPoint(-1100, 0, 0, 0);
+		colorFun->AddRGBPoint(129, 0.3, 0, 0);
+		colorFun->AddRGBPoint(1059, 0.8, 0.07, 0);
+		colorFun->AddRGBPoint(1459, 1, 0.9, 0.6);
+		colorFun->AddRGBPoint(1863, 1, 1, 1);
+		colorFun->AddRGBPoint(3899, 1, 1, 1);
+		volumeProperty->SetScalarOpacity(opacityFun);
+		volumeProperty->SetColor(colorFun);
+	}
+	else if (value == 1)
+	{
+		volumeProperty->SetInterpolationTypeToLinear();
+		//volumeProperty->ShadeOn();  //打开或者关闭阴影测试
+		volumeProperty->SetAmbient(1);
+		volumeProperty->SetDiffuse(0);  //漫反射
+		vtkSmartPointer<vtkPiecewiseFunction> opacityFun = vtkSmartPointer<vtkPiecewiseFunction>::New();
+		opacityFun->AddPoint(-1100, 0);
+		opacityFun->AddPoint(1043, 0);
+		opacityFun->AddPoint(1853, 0.28);
+		opacityFun->AddPoint(3072, 0.5);
+		opacityFun->AddPoint(3899, 1);
+		vtkSmartPointer<vtkColorTransferFunction> colorFun = vtkSmartPointer<vtkColorTransferFunction>::New();
+		colorFun->AddRGBPoint(-1100, 0, 0, 0);
+		colorFun->AddRGBPoint(129, 0.7, 0, 0);
+		colorFun->AddRGBPoint(954, 0.9, 0.3, 0);
+		colorFun->AddRGBPoint(1978, 1, 0.5, 0);
+		colorFun->AddRGBPoint(3001, 1, 1, 1);
+		colorFun->AddRGBPoint(3120, 1, 1, 1);
+		colorFun->AddRGBPoint(3899, 1, 1, 1);
+		volumeProperty->SetScalarOpacity(opacityFun);
+		volumeProperty->SetColor(colorFun);
+	}
+	else if (value == 2)
+	{
+		volumeProperty->SetInterpolationTypeToLinear();
+		//volumeProperty->ShadeOn();  //打开或者关闭阴影测试
+		volumeProperty->SetAmbient(0.6);
+		volumeProperty->SetDiffuse(0.6);  //漫反射
+		vtkSmartPointer<vtkPiecewiseFunction> opacityFun = vtkSmartPointer<vtkPiecewiseFunction>::New();
+		opacityFun->AddPoint(-1100, 0);
+		opacityFun->AddPoint(-385, 0);
+		opacityFun->AddPoint(205, 0.2);
+		opacityFun->AddPoint(922, 0.2);
+		opacityFun->AddPoint(1638, 0.3);
+		opacityFun->AddPoint(3072, 0.5);
+		opacityFun->AddPoint(3899, 0.5);
+		vtkSmartPointer<vtkColorTransferFunction> colorFun = vtkSmartPointer<vtkColorTransferFunction>::New();
+		colorFun->AddRGBPoint(-1100, 0, 0, 0);
+		colorFun->AddRGBPoint(-385, 0.15, 0.15, 0.15);
+		colorFun->AddRGBPoint(1638, 1, 1, 1);
+		colorFun->AddRGBPoint(3899, 1, 1, 1);
+		volumeProperty->SetScalarOpacity(opacityFun);
+		volumeProperty->SetColor(colorFun);
+	}
+	volumeRenderer->GetRenderWindow()->Render();
+
+}
 
 void simpleTK::constructMPR2(vtkSmartPointer<vtkImageData> imageData) {
-
-	
 
 	for (int i = 0; i < 3; i++)
 	{
@@ -105,7 +230,7 @@ void simpleTK::constructMPR2(vtkSmartPointer<vtkImageData> imageData) {
 		vtkResliceCursorLineRepresentation* rep = vtkResliceCursorLineRepresentation::SafeDownCast(
 			riw[i]->GetResliceCursorWidget()->GetRepresentation());
 		riw[i]->SetResliceCursor(riw[0]->GetResliceCursor());
-
+		
 		rep->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
 
 		riw[i]->SetInputData(mReader->GetOutput());
@@ -190,20 +315,20 @@ void simpleTK::constructMPR2(vtkSmartPointer<vtkImageData> imageData) {
 	riw[1]->GetRenderWindow()->Render();
 	riw[2]->GetRenderWindow()->Render();
 }
-void simpleTK::constructMPR()
-{
-	if (!m_mprMaker)
-	{
-		return;
-	}
-	m_mprMaker->SetRenderWindows(
-		ui.imageViewerWidget1->renderWindow(),
-		ui.imageViewerWidget2->renderWindow(),
-		ui.imageViewerWidget0->renderWindow());
-
-	m_mprMaker->createMPR(mReader);
-
-}
+// void simpleTK::constructMPR()
+// {
+// 	if (!m_mprMaker)
+// 	{
+// 		return;
+// 	}
+// 	m_mprMaker->SetRenderWindows(
+// 		ui.imageViewerWidget1->renderWindow(),
+// 		ui.imageViewerWidget2->renderWindow(),
+// 		ui.imageViewerWidget0->renderWindow());
+// 
+// 	m_mprMaker->createMPR(mReader);
+// 
+// }
 
 
 
