@@ -59,6 +59,7 @@
    </attribute>
    <addaction name="actionFolder"/>
    <addaction name="actionTag"/>
+   <addaction name="actionreslize"/>
   </widget>
   <action name="actionTag">
    <property name="icon">
@@ -79,6 +80,15 @@
    </property>
    <property name="text">
     <string>Folder</string>
+   </property>
+  </action>
+  <action name="actionreslize">
+   <property name="icon">
+    <iconset resource="simpleTK.qrc">
+     <normaloff>:/res/res/icon_reslice.png</normaloff>:/res/res/icon_reslice.png</iconset>
+   </property>
+   <property name="text">
+    <string>reslize</string>
    </property>
   </action>
  </widget>

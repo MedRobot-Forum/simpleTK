@@ -152,7 +152,7 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 		m_colorMap = vtkSmartPointer<vtkScalarsToColors>::New();
 		m_colorMap->SetRange(level - 0.5 * window, level + 0.5 * window);
 	}
-	m_reslicer[t_plane]->SetInputData(m_reader->GetOutput());
+ 	m_reslicer[t_plane]->SetInputData(m_reader->GetOutput());
 	m_reslicer[t_plane]->BypassOff();
 	m_reslicer[t_plane]->SetInformationInput(m_reader->GetOutput());
 	m_reslicer[t_plane]->SetOutputDimensionality(2);
@@ -185,16 +185,16 @@ void MPRMaker::renderPlaneOffScreen(const int t_plane)
 			break;
 	 }
 
-	mTextActor[t_plane]->SetDisplayPosition(0,220);
+	//mTextActor[t_plane]->SetDisplayPosition(0,220);
 	mTextActor[t_plane]->GetTextProperty()->SetFontSize(20);
-	vtkNew<vtkImageActor> actor;
+	vtkNew<vtkImageSlice> slice;
 	vtkNew<vtkRenderer> renderer;
 	vtkNew<vtkImageResliceMapper> mapper;
 	mapper->SeparateWindowLevelOperationOff();
 	mapper->SetInputConnection(m_reslicer[t_plane]->GetOutputPort());
-	actor->GetProperty()->SetInterpolationTypeToCubic();
-	actor->SetMapper(mapper);
-	renderer->AddActor(actor);
+	slice->GetProperty()->SetInterpolationTypeToCubic();
+	slice->SetMapper(mapper);
+	renderer->AddViewProp(slice);
 	renderer->AddActor(mTextActor[t_plane]);
 	renderer->SetBackground(0, 0, 0);
 	renderer->GetActiveCamera()->SetParallelProjection(1);

@@ -17,31 +17,28 @@ void simpleTK::init()
 {
 	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
-	//m_mprMaker = std::make_unique<MPRMaker>();
+	connect(ui.actionreslize, &QAction::triggered, this, &simpleTK::showCursorReslize);
+	ui.actionreslize->setCheckable(true);
 
+
+	m_widgetMPR = std::make_unique<vtkWidgetMPR>();
 
 	for (int i = 0; i < 3; i++)
 	{
-		riw[i] = vtkSmartPointer<vtkResliceImageViewer>::New();
-		vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
-		riw[i]->SetRenderWindow(renderWindow);
+		irenderWindow[i] = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
+
 	}
+	ui.imageViewerWidget0->setRenderWindow(irenderWindow[0]);
+	ui.imageViewerWidget1->setRenderWindow(irenderWindow[1]);
+	ui.imageViewerWidget2->setRenderWindow(irenderWindow[2]);
+    
 
-	ui.imageViewerWidget1->setRenderWindow(riw[0]->GetRenderWindow());
-	riw[0]->SetupInteractor(ui.imageViewerWidget1->renderWindow()->GetInteractor());
+	//3d
+		volumeRenderer = vtkSmartPointer<vtkRenderer>::New();
+		vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
+		ui.imageViewerWidget3->setRenderWindow(renderWindow);
+		ui.imageViewerWidget3->renderWindow()->AddRenderer(volumeRenderer);
 
-	ui.imageViewerWidget2->setRenderWindow(riw[1]->GetRenderWindow());
-	riw[1]->SetupInteractor(ui.imageViewerWidget2->renderWindow()->GetInteractor());
-
-	ui.imageViewerWidget0->setRenderWindow(riw[2]->GetRenderWindow());
-	riw[2]->SetupInteractor(ui.imageViewerWidget0->renderWindow()->GetInteractor());
-
-
-
-	volumeRenderer = vtkSmartPointer<vtkRenderer>::New();
-	vtkNew<vtkGenericOpenGLRenderWindow> renderWindow;
-	ui.imageViewerWidget3->setRenderWindow(renderWindow);
-	ui.imageViewerWidget3->renderWindow()->AddRenderer(volumeRenderer);
 
 	UpdateRenderModel(0);
 	for (int i = 0; i < 3; i++)
@@ -62,6 +59,13 @@ void simpleTK::openDicomTag()
 	tagDialog = new TagDialog(nullptr, filePath);
 	tagDialog->show();	
 }
+
+void simpleTK::showCursorReslize(bool flag)
+{
+
+	m_widgetMPR->setShowCursor(flag);
+}
+
 void simpleTK::openFolder()
 {
 
@@ -87,11 +91,26 @@ void simpleTK::openFolder()
 
 
 
-	constructMPR2(mReader->GetOutput());
-	volumeRender(mReader->GetOutput());
+	//constructMPR3(mReader->GetOutput());
+	//volumeRender(mReader->GetOutput());
 
-	//constructMPR();
+	constructMPR();
+	volumeRender(mReader->GetOutput());
 }
+void simpleTK::constructMPR()
+{
+	if (!m_widgetMPR)
+	{
+		return;
+	}
+	
+	m_widgetMPR->setRenderWindowsMPR(
+		ui.imageViewerWidget1->renderWindow(),
+		ui.imageViewerWidget2->renderWindow(),
+		ui.imageViewerWidget0->renderWindow());
+	m_widgetMPR->render(mReader);
+}
+
 void simpleTK::volumeRender(vtkSmartPointer<vtkImageData> imageData) {
 
 	int dim[3];
@@ -225,7 +244,7 @@ void simpleTK::UpdateRenderModel(int value)
 void simpleTK::constructMPR2(vtkSmartPointer<vtkImageData> imageData) {
 
 	for (int i = 0; i < 3; i++)
-	{
+	{	
 		// make them all share the same reslice cursor object.
 		vtkResliceCursorLineRepresentation* rep = vtkResliceCursorLineRepresentation::SafeDownCast(
 			riw[i]->GetResliceCursorWidget()->GetRepresentation());
@@ -315,21 +334,112 @@ void simpleTK::constructMPR2(vtkSmartPointer<vtkImageData> imageData) {
 	riw[1]->GetRenderWindow()->Render();
 	riw[2]->GetRenderWindow()->Render();
 }
-// void simpleTK::constructMPR()
-// {
-// 	if (!m_mprMaker)
-// 	{
-// 		return;
-// 	}
-// 	m_mprMaker->SetRenderWindows(
-// 		ui.imageViewerWidget1->renderWindow(),
-// 		ui.imageViewerWidget2->renderWindow(),
-// 		ui.imageViewerWidget0->renderWindow());
-// 
-// 	m_mprMaker->createMPR(mReader);
-// 
-// }
 
+void simpleTK::constructMPR3(vtkSmartPointer<vtkImageData> imageData) {
+
+	vtkSmartPointer<vtkCellPicker> picker = vtkSmartPointer<vtkCellPicker>::New();
+	picker->SetTolerance(0.005);
+
+	vtkSmartPointer<vtkProperty> ipwProp = vtkSmartPointer<vtkProperty>::New();
+	ipwProp->SetOpacity(0.01);
+
+	vtkRenderWindowInteractor* iren = ui.imageViewerWidget3->interactor();
+
+
+	for (int i = 0; i < 3; i++)
+	{
+		planeWidget[i] = vtkSmartPointer<vtkImagePlaneWidget>::New();
+		planeWidget[i]->SetInteractor(iren);
+		planeWidget[i]->SetPicker(picker);
+		planeWidget[i]->RestrictPlaneToVolumeOn();
+		double color[3] = { 0, 0, 0 };
+		color[i] = 1;
+		planeWidget[i]->GetPlaneProperty()->SetColor(color);
+
+		//color[0] /= 4.0;
+		//color[1] /= 4.0;
+		//color[2] /= 4.0;
+		//riw[i]->GetRenderer()->SetBackground(color);
+
+		planeWidget[i]->SetTexturePlaneProperty(ipwProp);
+		planeWidget[i]->TextureInterpolateOff();
+		planeWidget[i]->SetResliceInterpolateToLinear();
+		int imageDims[3];
+		imageData->GetDimensions(imageDims);
+		planeWidget[i]->SetInputData(imageData);
+		planeWidget[i]->SetPlaneOrientation(i);
+		planeWidget[i]->SetSliceIndex(imageDims[i] / 2);
+		planeWidget[i]->DisplayTextOn();
+		planeWidget[i]->SetDefaultRenderer(volumeRenderer);
+		planeWidget[i]->SetWindowLevel(4095, 1024);
+		planeWidget[i]->On();
+		planeWidget[i]->InteractionOn();
+	}
+
+	planeWidget[1]->SetLookupTable(planeWidget[0]->GetLookupTable());
+	planeWidget[2]->SetLookupTable(planeWidget[0]->GetLookupTable());
+
+	// 当坐标系发生改变时即调用vtkResliceCursor来进行图像切分并进行更新到vtkRenderer对象中
+	vtkSmartPointer<vtkResliceCursorCallback> cbk = vtkSmartPointer<vtkResliceCursorCallback>::New();
+	vtkSmartPointer< vtkResliceCursor > resliceCursor = vtkSmartPointer< vtkResliceCursor >::New();
+	resliceCursor->SetCenter(imageData->GetCenter());
+	resliceCursor->SetThickMode(0);
+	resliceCursor->SetThickness(10, 10, 10);
+	resliceCursor->SetImage(imageData);
+
+	vtkSmartPointer< vtkResliceCursorWidget > resliceCursorWidget[3];
+	vtkSmartPointer< vtkResliceCursorLineRepresentation > resliceCursorRep[3];
+
+
+
+
+	double viewUp[3][3] = { { 0, 0, -1 }, { 0, 0, 1 }, { 0, 1, 0 } };
+	for (int i = 0; i < 3; i++)
+	{
+		resliceCursorWidget[i] = vtkSmartPointer< vtkResliceCursorWidget >::New();
+		resliceCursorWidget[i]->SetInteractor(iren);
+
+		resliceCursorRep[i] = vtkSmartPointer< vtkResliceCursorLineRepresentation >::New();
+		resliceCursorWidget[i]->SetRepresentation(resliceCursorRep[i]);
+		resliceCursorRep[i]->GetResliceCursorActor()->GetCursorAlgorithm()->SetResliceCursor(resliceCursor);
+		resliceCursorRep[i]->GetResliceCursorActor()->GetCursorAlgorithm()->SetReslicePlaneNormal(i);
+
+		const double minVal = imageData->GetScalarRange()[0];
+		if (vtkImageReslice *reslice = vtkImageReslice::SafeDownCast(resliceCursorRep[i]->GetReslice()))
+		{
+			reslice->SetBackgroundColor(minVal, minVal, minVal, minVal);
+		}
+
+		resliceCursorWidget[i]->SetDefaultRenderer(imageViewer[i]->GetRenderer());
+		resliceCursorWidget[i]->SetEnabled(1);
+
+		imageViewer[i]->GetRenderer()->GetActiveCamera()->SetFocalPoint(0, 0, 0);
+		double camPos[3] = { 0, 0, 0 };
+		camPos[i] = 1;
+		imageViewer[i]->GetRenderer()->GetActiveCamera()->SetPosition(camPos);
+		imageViewer[i]->GetRenderer()->GetActiveCamera()->ParallelProjectionOn();
+		imageViewer[i]->GetRenderer()->GetActiveCamera()->SetViewUp(viewUp[i][0], viewUp[i][1], viewUp[i][2]);
+		imageViewer[i]->GetRenderer()->ResetCamera();
+		cbk->IPW[i] = planeWidget[i];
+		cbk->RCW[i] = resliceCursorWidget[i];
+		resliceCursorWidget[i]->AddObserver(vtkResliceCursorWidget::ResliceAxesChangedEvent, cbk);
+		double range[2];
+		imageData->GetScalarRange(range);
+		resliceCursorRep[i]->SetWindowLevel(range[1] - range[0], (range[0] + range[1]) / 2.0);
+		planeWidget[i]->SetWindowLevel(range[1] - range[0], (range[0] + range[1]) / 2.0);
+		resliceCursorRep[i]->SetLookupTable(resliceCursorRep[0]->GetLookupTable());
+		planeWidget[i]->GetColorMap()->SetLookupTable(resliceCursorRep[0]->GetLookupTable());
+
+
+
+		//_rendererAxial->GetRenderWindow()->GetInteractor()->SetInteractorStyle(styleAxial);
+		imageViewer[i]->GetRenderer()->ResetCamera();
+		imageViewer[i]->GetRenderer()->GetRenderWindow()->Render();
+		//imageViewer[i]->GetRenderer()->Render();
+	}
+
+
+}
 
 
 // void simpleTK::constructMPR(double *center)
