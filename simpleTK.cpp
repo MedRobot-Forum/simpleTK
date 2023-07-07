@@ -6,6 +6,8 @@ simpleTK::simpleTK(QWidget *parent)
 {
     ui.setupUi(this);
 	this->setStyleSheet("QWidget{background: black;}");
+	//ui.mainToolBar->setStyleSheet("QToolBar{border-color: rgb(0, 0, 0);border:1px solid;}");
+
 	init();
 	
 }
