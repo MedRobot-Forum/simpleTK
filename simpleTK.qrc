@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/res">
+    <file>res/crop_icon.png</file>
     <file>res/icon_reslice.png</file>
     <file>res/folder.svg</file>
     <file>res/tag2.svg</file>

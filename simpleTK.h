@@ -20,6 +20,7 @@
 #include <vtkImageCast.h>
 #include "vtkwidgetmpr.h"
 #include <vtkResliceCursorCallback.h>
+#include "vtkboxwidget3dcallback.h"
 class simpleTK : public QMainWindow
 {
     Q_OBJECT
@@ -33,6 +34,7 @@ public slots:
 	void openFolder();
 	void openDicomTag();
 	void showCursorReslize(bool flag);
+	void showBoxCrop(bool flag);
 	void init();
 	//void constructMPR(double *center);
 	void constructMPR();
@@ -43,8 +45,10 @@ public slots:
 
 	void volumeRender(vtkSmartPointer<vtkImageData> imageData);
 	void UpdateRenderModel(int value);
+	void activateBoxWidget(const bool& t_flag);
 private:
-
+	void initBoxWidget();
+	void initBoxWidgetCallback();
 private:
     Ui::simpleTKClass ui;
 	//std::unique_ptr<MPRMaker> m_mprMaker = {};
@@ -61,7 +65,10 @@ private:
 
 	//3d
 	vtkSmartPointer<vtkRenderer> volumeRenderer;
+	vtkSmartPointer<vtkBoxWidget2> m_boxWidget;
+	vtkSmartPointer<vtkBoxWidget3DCallback> m_boxWidgetCallback = {};
 
+	
 
 	///////////////////////////////////////////////////////
 	//vtkSmartPointer<vtkDICOMImageReader> mReader = vtkSmartPointer<vtkDICOMImageReader>::New();

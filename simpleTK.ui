@@ -60,6 +60,7 @@
    <addaction name="actionFolder"/>
    <addaction name="actionTag"/>
    <addaction name="actionreslize"/>
+   <addaction name="actionactionCrop"/>
   </widget>
   <action name="actionTag">
    <property name="icon">
@@ -89,6 +90,15 @@
    </property>
    <property name="text">
     <string>reslize</string>
+   </property>
+  </action>
+  <action name="actionactionCrop">
+   <property name="icon">
+    <iconset resource="simpleTK.qrc">
+     <normaloff>:/res/res/crop_icon.png</normaloff>:/res/res/crop_icon.png</iconset>
+   </property>
+   <property name="text">
+    <string>actionCrop</string>
    </property>
   </action>
  </widget>

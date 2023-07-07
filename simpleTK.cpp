@@ -18,7 +18,10 @@ void simpleTK::init()
 	connect(ui.actionFolder, &QAction::triggered, this, &simpleTK::openFolder);
 	connect(ui.actionTag, &QAction::triggered, this, &simpleTK::openDicomTag);
 	connect(ui.actionreslize, &QAction::triggered, this, &simpleTK::showCursorReslize);
+	connect(ui.actionactionCrop, &QAction::triggered, this, &simpleTK::showBoxCrop);
+
 	ui.actionreslize->setCheckable(true);
+	ui.actionactionCrop->setCheckable(true);
 
 
 	m_widgetMPR = std::make_unique<vtkWidgetMPR>();
@@ -64,6 +67,16 @@ void simpleTK::showCursorReslize(bool flag)
 {
 
 	m_widgetMPR->setShowCursor(flag);
+}
+
+void simpleTK::showBoxCrop(bool flag) {
+
+	if (!m_boxWidget)
+	{
+		initBoxWidget();
+	}
+	m_boxWidget->SetEnabled(flag);
+	ui.imageViewerWidget3->renderWindow()->Render();
 }
 
 void simpleTK::openFolder()
@@ -440,6 +453,39 @@ void simpleTK::constructMPR3(vtkSmartPointer<vtkImageData> imageData) {
 
 
 }
+
+void simpleTK::activateBoxWidget(const bool& t_flag)
+{
+	if (!m_boxWidget)
+	{
+		initBoxWidget();
+	}
+	m_boxWidget->SetEnabled(t_flag);
+
+	ui.imageViewerWidget3->renderWindow()->Render();
+}
+
+void simpleTK::initBoxWidget()
+{
+	if (!volumeRenderer || !volume)
+	{
+		return;
+	}
+	m_boxWidget = vtkSmartPointer<vtkBoxWidget2>::New();
+	m_boxWidget->SetInteractor(volumeRenderer->GetRenderWindow()->GetInteractor());
+	m_boxWidget->CreateDefaultRepresentation();
+	m_boxWidget->GetRepresentation()->SetPlaceFactor(1);
+	m_boxWidget->GetRepresentation()->PlaceWidget(volume->GetBounds());
+	initBoxWidgetCallback();
+}
+
+void simpleTK::initBoxWidgetCallback() {
+
+	m_boxWidgetCallback = vtkSmartPointer<vtkBoxWidget3DCallback>::New();
+	m_boxWidgetCallback->setVolume(volume);
+	m_boxWidget->AddObserver(vtkCommand::InteractionEvent, m_boxWidgetCallback);
+}
+
 
 
 // void simpleTK::constructMPR(double *center)
